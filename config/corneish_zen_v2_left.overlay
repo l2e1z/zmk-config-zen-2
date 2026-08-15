@@ -9,7 +9,6 @@
 /{
     chosen {
         zephyr,display = &epd;
-        zmk,battery = &vbatt;
         zmk,underglow = &led_strip;
     };
 
@@ -39,10 +38,6 @@
         label = "EXT_POWER";
         control-gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
         init-delay-ms = <50>;
-    };
-
-    vbatt: vbatt {
-        compatible = "zmk,battery-nrf-vddh";
     };
 };
 
