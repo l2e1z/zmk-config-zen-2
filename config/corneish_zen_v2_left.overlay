@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 2021 Darryl deHaan
-* SPDX-License-Identifier: MIT
-*/
+ * Copyright (c) 2021 Darryl deHaan
+ * SPDX-License-Identifier: MIT
+ */
 
 #include "corneish_zen.dtsi"
 #include <dt-bindings/led/led.h>
@@ -46,40 +46,12 @@
     };
 };
 
-&pinctrl {
-    spi0_default: spi0_default {
-        group1 {
-            psels = <0x00000014>, <0x00000011>, <0x00000005>;
-        };
-    };
-
-    spi0_sleep: spi0_sleep {
-        group1 {
-            psels = <0x00000014>, <0x00000011>, <0x00000005>;
-            low-power-enable;
-        };
-    };
-
-    spi3_default: spi3_default {
-        group1 {
-            psels = <0x00000006>;
-        };
-    };
-
-    spi3_sleep: spi3_sleep {
-        group1 {
-            psels = <0x00000006>;
-            low-power-enable;
-        };
-    };
-};
-
 &spi0 {
     status = "okay";
     compatible = "nordic,nrf-spim";
-    pinctrl-0 = <&spi0_default>;
-    pinctrl-1 = <&spi0_sleep>;
-    pinctrl-names = "default", "sleep";
+    sck-pin = <20>;
+    mosi-pin = <17>;
+    miso-pin = <5>;
     cs-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
 
     epd: il0323@0 {
@@ -100,10 +72,9 @@
 &spi3 {
     compatible = "nordic,nrf-spim";
     status = "okay";
-
-    pinctrl-0 = <&spi3_default>;
-    pinctrl-1 = <&spi3_sleep>;
-    pinctrl-names = "default", "sleep";
+    sck-pin = <255>;
+    mosi-pin = <6>;
+    miso-pin = <255>;
 
     led_strip: ws2812@0 {
         compatible = "worldsemi,ws2812-spi";
