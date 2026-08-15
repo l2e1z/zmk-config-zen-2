@@ -1,5 +1,50 @@
+name: Build Firmware
+
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: LOWPROKB/zmk/.github/workflows/build-user-config.yml@corne-ish-zen-v2
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache west modules
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: |
+            modules
+            tools
+            zephyr
+            bootloader
+            zmk
+          key: ${{ runner.os }}-west-${ ${{ hashFiles('**/west.yml', '**/build.yaml') }}
+
+      - name: Initialize West Workspace
+        run: |
+          west init -l config
+          west update
+          west zephyr-export
+
+      - name: Build Corne-ish Zen Left
+        run: |
+          west build -s zmk/app -b corneish_zen_v2_left -- -DZMK_CONFIG="$(pwd)/config"
+
+      - name: Build Corne-ish Zen Right
+        run: |
+          west build -s zmk/app -b corneish_zen_v2_right -d build/right -- -DZMK_CONFIG="$(pwd)/config"
+
+      - name: Rename UF2 files
+        run: |
+          mkdir -p build/artifacts
+          cp build/zephyr/zmk.uf2 build/artifacts/corneish_zen_v2_left.uf2
+          cp build/right/zephyr/zmk.uf2 build/artifacts/corneish_zen_v2_right.uf2
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: build/artifacts/*.uf2
