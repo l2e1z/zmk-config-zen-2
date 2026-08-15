@@ -21,7 +21,7 @@ jobs:
             zephyr
             bootloader
             zmk
-          key: ${{ runner.os }}-west-${ ${{ hashFiles('**/west.yml', '**/build.yaml') }}
+          key: ${{ runner.os }}-west-${{ hashFiles('**/west.yml', '**/build.yaml') }}
 
       - name: Initialize West Workspace
         run: |
@@ -31,11 +31,21 @@ jobs:
 
       - name: Build Corne-ish Zen Left
         run: |
-          west build -s zmk/app -b corneish_zen_v2_left -- -DZMK_CONFIG="$(pwd)/config"
+          if [ -d "zmk/app" ]; then
+            APP_DIR="zmk/app"
+          else
+            APP_DIR="app"
+          fi
+          west build -s $APP_DIR -b corneish_zen_v2_left -- -DZMK_CONFIG="$(pwd)/config"
 
       - name: Build Corne-ish Zen Right
         run: |
-          west build -s zmk/app -b corneish_zen_v2_right -d build/right -- -DZMK_CONFIG="$(pwd)/config"
+          if [ -d "zmk/app" ]; then
+            APP_DIR="zmk/app"
+          else
+            APP_DIR="app"
+          fi
+          west build -s $APP_DIR -b corneish_zen_v2_right -d build/right -- -DZMK_CONFIG="$(pwd)/config"
 
       - name: Rename UF2 files
         run: |
